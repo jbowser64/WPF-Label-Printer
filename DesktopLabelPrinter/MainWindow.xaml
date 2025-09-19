@@ -1,0 +1,127 @@
+﻿<Window x:Class="DesktopLabelPrinter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DesktopLabelPrinter"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"       
+        Background="#FF7A7792"
+        >
+    <Window.Resources>
+        <Style TargetType="Border">
+            <Setter Property="CornerRadius" Value="10"/>
+        </Style>
+    </Window.Resources>
+
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="226*"/>
+            <ColumnDefinition Width="271*"/>
+            <ColumnDefinition Width="303*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Margin="0,0,2,0" 
+                Orientation="Vertical">
+
+            <Label>Enter Part Number:</Label>
+
+            <TextBox x:Name="PartNumberTextBox" 
+                     Width="200" 
+                     Height="30" 
+                     Margin="0,10,0,10"
+                     BorderThickness="2" TextChanged="PartNumberTextBox_TextChanged"
+                     >
+                <TextBox.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </TextBox.Resources>
+            </TextBox>
+            
+            <Label >Enter Location:</Label>
+            <TextBox x:Name="LocationTextBox" 
+                     Width="200" 
+                     Height="30" 
+                     Margin="0,10,0,10" 
+                    >
+                <TextBox.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </TextBox.Resources>
+            </TextBox>
+            <Label Content="Number of copies to print:"/>
+            <TextBox x:Name="numCopies" 
+                     Text="1" 
+                     Width="50" 
+                     Height="30" 
+                     Margin="30,10,0,10" 
+                     HorizontalAlignment="Left" 
+                     TextAlignment="Center">
+                <TextBox.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </TextBox.Resources>
+            </TextBox>
+            <Label>Enter FIFO Date:</Label>
+            <TextBox x:Name="FIFODateTextBox" 
+                     Text="Month Year" 
+                     Width="200" 
+                     Height="30" 
+                     Margin="0,10,0,10">
+                <TextBox.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </TextBox.Resources>
+            </TextBox>
+            <Button x:Name="PrintButton" 
+                Content="Print Label" 
+                Width="100" 
+                Height="23" 
+                Click="PrintButton_Click">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            
+        </StackPanel>
+        <!--{d:SampleData ItemCount=5}-->
+        <Label Grid.Column="1" 
+               Content="ZPLPreview " 
+               
+               HorizontalAlignment="Left" 
+               Margin="37,28,0,0" 
+               VerticalAlignment="Top" Height="26" Width="70"/>
+        <Image x:Name="zplPNG"
+               Grid.Column="1" 
+               HorizontalAlignment="Left" 
+               Height="86" 
+               Margin="37,63,0,0" 
+               VerticalAlignment="Top" 
+               Width="144"
+               />
+        <ListBox x:Name="partsAndDescriptionList" Visibility="Collapsed"  Height="100" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.ColumnSpan="2" Margin="4,68,267,266" SelectionChanged="partsAndDescriptionList_SelectionChanged"/>
+        <DataGrid x:Name="partsAndLocationsGrid" 
+                  Grid.Column="1" 
+                  d:ItemsSource="{d:SampleData ItemCount=5}"
+                  Margin="3,197,6,8" 
+                  Grid.ColumnSpan="2" 
+                  SelectionChanged="partsAndLocationsGrid_SelectionChanged"
+                  >
+            <DataGrid.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="10"/>
+                </Style>
+            </DataGrid.Resources>
+        </DataGrid> 
+
+
+    </Grid>
+
+
+</Window>
