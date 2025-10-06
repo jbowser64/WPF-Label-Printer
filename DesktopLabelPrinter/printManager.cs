@@ -75,7 +75,7 @@ namespace DesktopLabelPrinter
             string printerName = "ZDesigner ZM400 200 dpi (ZPL) 2";
 
             string imageFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "label.png");
-            //C:\Users\usjbows\OneDrive - Waters Corporation\Desktop\Misc\SAP Logo.jpg
+            
             try
             {
                 if (!File.Exists(imageFilePath))
