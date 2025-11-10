@@ -43,8 +43,9 @@
             <TextBox x:Name="LocationTextBox" 
                      Width="200" 
                      Height="30" 
-                     Margin="0,10,0,10" 
-                    >
+                     Margin="0,10,0,10"
+                     TextChanged="LocationTextBox_TextChanged"
+                     >
                 <TextBox.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="5"/>

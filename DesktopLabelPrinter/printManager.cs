@@ -13,7 +13,7 @@ namespace DesktopLabelPrinter
 
         private static PartsAndLocationsContext _context;
 
-        public async Task PNGDownload(string partNum)
+        public async Task PNGDownload(string partNum, string? overrideBin = null)
         {
             PartsAndLocationsContext context = new PartsAndLocationsContext();
 
@@ -33,7 +33,9 @@ namespace DesktopLabelPrinter
                     string desc1 = description.Length > 25 ? description.Substring(0, 25) : description;
                     string desc2 = description.Length > 25 ? description.Substring(25) : "";
                     string material = item.Material;
-                    string bin = item.Bin; 
+                    
+                    // Use override bin location if provided, otherwise use database bin
+                    string bin = !String.IsNullOrWhiteSpace(overrideBin) ? overrideBin : (item.Bin ?? ""); 
 
                     URL = $"https://api.labelary.com/v1/printers/8dpmm/labels/2x1/0/" +
                        $"%5EXA%5EPW406%5EFT40,52%5EA0N,42,42%5EFH/%5EFD{material}%5EFS%5EFT40,78%5EA0N,25,25%5EFH/%5E" +
@@ -42,7 +44,6 @@ namespace DesktopLabelPrinter
                        $"FD{bin}%5EFS%5EFT275,140%5EA0N,37,37%5EFH/%5EFD%5EFS%5EFT40,180%5EA0N,37,37%5EFH/%5E" +
                        $"FDFIFO: {DateTime.Now.ToString("MMMM yyyy")}%5EFS%5EPQ1,0,1,Y%5EXZ";
                 }
-                partNum = "";
                 string outputFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "label.png");
 
 

@@ -103,7 +103,7 @@ namespace DesktopLabelPrinter
             }
         }
 
-        private void PrintButton_Click(object sender, RoutedEventArgs e)
+        private async void PrintButton_Click(object sender, RoutedEventArgs e)
         {
             if (PrinterComboBox.SelectedItem == null)
             {
@@ -128,8 +128,29 @@ namespace DesktopLabelPrinter
                 return;
             }
 
-            printManager printManager = new printManager();
-            printManager.Print(copies, selectedPrinter);
+            // Ensure we have the latest label image with current location override
+            string partNum = PartNumberTextBox.Text;
+            if (!String.IsNullOrWhiteSpace(partNum))
+            {
+                string locationOverride = LocationTextBox.Text?.Trim() ?? "";
+                try
+                {
+                    printManager printManager = new printManager();
+                    await printManager.PNGDownload(partNum, locationOverride);
+                    printManager.Print(copies, selectedPrinter);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred while preparing to print: {ex.Message}", 
+                        "Print Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                // If no part number, try to print existing label
+                printManager printManager = new printManager();
+                printManager.Print(copies, selectedPrinter);
+            }
         }
 
         private void PartNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -146,7 +167,7 @@ namespace DesktopLabelPrinter
             partsAndDescriptionList.Visibility = Visibility.Visible;
         }
 
-        public void getZPLimage(string? partnum)
+        public void getZPLimage(string? partnum, string? overrideBin = null)
         {
             var parts = from p
                         in _context.PartsAndLocations
@@ -162,12 +183,15 @@ namespace DesktopLabelPrinter
                     string description = item.Description ?? "No Description";
                     string desc1 = description.Length > 25 ? description.Substring(0, 25) : description;
                     string desc2 = description.Length > 25 ? description.Substring(25) : "";
+                    
+                    // Use override bin location if provided, otherwise use database bin
+                    string binLocation = !String.IsNullOrWhiteSpace(overrideBin) ? overrideBin : (item.Bin ?? "");
 
                      URL = $"https://api.labelary.com/v1/printers/8dpmm/labels/2x1/0/" +
                         $"%5EXA%5EPW406%5EFT40,52%5EA0N,42,42%5EFH/%5EFD{item.Material}%5EFS%5EFT40,78%5EA0N,25,25%5EFH/%5E" +
                         $"FD{desc1}%5EFS%5EFT40,106%5EA0N,25,25%5EFH/%5E" +
                         $"FD{desc2}%5EFS%5EFT40,140%5EA0N,37,37%5EFH/%5E" +
-                        $"FD{item.Bin}%5EFS%5EFT275,140%5EA0N,37,37%5EFH/%5EFD%5EFS%5EFT40,180%5EA0N,37,37%5EFH/%5E" +
+                        $"FD{binLocation}%5EFS%5EFT275,140%5EA0N,37,37%5EFH/%5EFD%5EFS%5EFT40,180%5EA0N,37,37%5EFH/%5E" +
                         $"FDFIFO: {DateTime.Now.ToString("MMMM yyyy")}%5EFS%5EPQ1,0,1,Y%5EXZ";
                    
                 }
@@ -178,20 +202,44 @@ namespace DesktopLabelPrinter
                 zplPNG.Source = null;
             }
         }
+        
+        private void LocationTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            // Update ZPL preview when location changes, but only if we have a part number
+            string partNum = PartNumberTextBox.Text;
+            if (!String.IsNullOrWhiteSpace(partNum))
+            {
+                string locationOverride = LocationTextBox.Text?.Trim() ?? "";
+                getZPLimage(partNum, locationOverride);
+            }
+        }
 
         private void partsAndDescriptionList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //move this again? figure out wtf is going on here
-
             if (partsAndDescriptionList.SelectedItem != null)
             {
                 string partNum = partsAndDescriptionList.SelectedItem.ToString();
                
                 try
                 {
+                    // Get the part from database to populate location field
+                    var part = _context.PartsAndLocations
+                        .Where(p => p.Material != null && p.Material.Contains(partNum) && p.Sloc == "1000")
+                        .FirstOrDefault();
+                    
+                    // Populate LocationTextBox with database bin if it exists, but only if text box is empty
+                    // This allows user to keep their override if they've already entered something
+                    if (part != null && String.IsNullOrWhiteSpace(LocationTextBox.Text))
+                    {
+                        LocationTextBox.Text = part.Bin ?? "";
+                    }
+                    
+                    // Use current location text box value (which may be database value or user override)
+                    string locationOverride = LocationTextBox.Text?.Trim() ?? "";
+                    
                     printManager printManager = new printManager();
-                    printManager.PNGDownload(partNum);
-                    getZPLimage(partNum);
+                    printManager.PNGDownload(partNum, locationOverride);
+                    getZPLimage(partNum, locationOverride);
 
                     partsAndLocationsGrid.ItemsSource = _context.PartsAndLocations
                         .Where(p => p.Material != null && p.Material.Contains(partNum))
@@ -204,10 +252,7 @@ namespace DesktopLabelPrinter
                 {
                     MessageBox.Show($"An error has occured. {ex.Message}");
                 }
-                //partsAndDescriptionList.Items.Clear();
             }
-
-
         }
 
         private void partsAndLocationsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
