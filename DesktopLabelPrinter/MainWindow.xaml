@@ -44,7 +44,7 @@
                      Width="200" 
                      Height="30" 
                      Margin="0,10,0,10"
-                     TextChanged="LocationTextBox_TextChanged"
+                     TextChanged="TextBox_TextChanged"
                      >
                 <TextBox.Resources>
                     <Style TargetType="Border">
@@ -71,7 +71,9 @@
                      Text="Month Year" 
                      Width="200" 
                      Height="30" 
-                     Margin="0,10,0,10">
+                     Margin="0,10,0,10"
+                     TextChanged="TextBox_TextChanged"
+                     >
                 <TextBox.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="5"/>

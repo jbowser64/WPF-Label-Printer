@@ -167,7 +167,7 @@ namespace DesktopLabelPrinter
             partsAndDescriptionList.Visibility = Visibility.Visible;
         }
 
-        public void getZPLimage(string? partnum, string? overrideBin = null)
+        public void getZPLimage(string? partnum, string? overrideBin = null, string? overrideFIFODate = null)
         {
             var parts = from p
                         in _context.PartsAndLocations
@@ -186,13 +186,13 @@ namespace DesktopLabelPrinter
                     
                     // Use override bin location if provided, otherwise use database bin
                     string binLocation = !String.IsNullOrWhiteSpace(overrideBin) ? overrideBin : (item.Bin ?? "");
-
+                    string fifoDate = !String.IsNullOrWhiteSpace(overrideFIFODate) ? overrideFIFODate : (DateTime.Now.ToString("MMMM yyyy"));
                      URL = $"https://api.labelary.com/v1/printers/8dpmm/labels/2x1/0/" +
                         $"%5EXA%5EPW406%5EFT40,52%5EA0N,42,42%5EFH/%5EFD{item.Material}%5EFS%5EFT40,78%5EA0N,25,25%5EFH/%5E" +
                         $"FD{desc1}%5EFS%5EFT40,106%5EA0N,25,25%5EFH/%5E" +
                         $"FD{desc2}%5EFS%5EFT40,140%5EA0N,37,37%5EFH/%5E" +
                         $"FD{binLocation}%5EFS%5EFT275,140%5EA0N,37,37%5EFH/%5EFD%5EFS%5EFT40,180%5EA0N,37,37%5EFH/%5E" +
-                        $"FDFIFO: {DateTime.Now.ToString("MMMM yyyy")}%5EFS%5EPQ1,0,1,Y%5EXZ";
+                        $"FDFIFO: {fifoDate}%5EFS%5EPQ1,0,1,Y%5EXZ";
                    
                 }
                 zplPNG.Source = new BitmapImage(new Uri(URL));
@@ -203,16 +203,26 @@ namespace DesktopLabelPrinter
             }
         }
         
-        private void LocationTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            // Update ZPL preview when location changes, but only if we have a part number
+            // Update ZPL preview when location and/or FIFO changes, but only if we have a part number
             string partNum = PartNumberTextBox.Text;
             if (!String.IsNullOrWhiteSpace(partNum))
             {
+                string fifoDateOverride = FIFODateTextBox.Text?.Trim() ?? "";
                 string locationOverride = LocationTextBox.Text?.Trim() ?? "";
-                getZPLimage(partNum, locationOverride);
+                getZPLimage(partNum, locationOverride, fifoDateOverride);
             }
         }
+        //private void FifodateTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        //{
+        //    string partNum = PartNumberTextBox.Text;
+        //    if (!String.IsNullOrWhiteSpace(partNum))
+        //    {
+        //        string fifoDateOverride = FIFODateTextBox.Text?.Trim() ?? "";
+        //        getZPLimage(partNum, fifoDateOverride);
+        //    }
+        //}
 
         private void partsAndDescriptionList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
