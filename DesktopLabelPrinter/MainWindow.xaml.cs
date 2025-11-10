@@ -14,6 +14,8 @@ namespace DesktopLabelPrinter
     public partial class MainWindow : Window
     {
         private readonly PartsAndLocationsContext _context;
+        private const string SettingsFileName = "printer_settings.txt";
+
         public MainWindow()
         {
             PartsAndLocationsContext context = new PartsAndLocationsContext();
@@ -24,15 +26,110 @@ namespace DesktopLabelPrinter
 
             partsAndLocationsGrid.ItemsSource = _context.PartsAndLocations.ToList();
 
+            LoadPrinters();
+        }
+
+        private void LoadPrinters()
+        {
+            try
+            {
+                // Get all installed printers
+                PrinterComboBox.Items.Clear();
+                foreach (string printer in PrinterSettings.InstalledPrinters)
+                {
+                    PrinterComboBox.Items.Add(printer);
+                }
+
+                // Try to load saved printer preference
+                string savedPrinter = LoadSavedPrinter();
+                if (!string.IsNullOrEmpty(savedPrinter) && PrinterComboBox.Items.Contains(savedPrinter))
+                {
+                    PrinterComboBox.SelectedItem = savedPrinter;
+                }
+                else if (PrinterComboBox.Items.Count > 0)
+                {
+                    // Default to first printer if no saved preference or saved printer not found
+                    PrinterComboBox.SelectedIndex = 0;
+                }
+                else
+                {
+                    MessageBox.Show("No printers found on this system. Please install a printer and restart the application.", 
+                        "No Printers Found", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading printers: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private string LoadSavedPrinter()
+        {
+            try
+            {
+                string settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SettingsFileName);
+                if (File.Exists(settingsPath))
+                {
+                    return File.ReadAllText(settingsPath).Trim();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Silently fail if settings can't be loaded
+                System.Diagnostics.Debug.WriteLine($"Error loading printer settings: {ex.Message}");
+            }
+            return string.Empty;
+        }
+
+        private void SavePrinter(string printerName)
+        {
+            try
+            {
+                string settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SettingsFileName);
+                File.WriteAllText(settingsPath, printerName);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error saving printer settings: {ex.Message}");
+            }
+        }
+
+        private void PrinterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (PrinterComboBox.SelectedItem != null)
+            {
+                string selectedPrinter = PrinterComboBox.SelectedItem.ToString();
+                SavePrinter(selectedPrinter);
+            }
         }
 
         private void PrintButton_Click(object sender, RoutedEventArgs e)
         {
-            printManager printManager = new printManager();
-            int copies = Convert.ToInt32(numCopies.Text);
+            if (PrinterComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a printer before printing.", "No Printer Selected", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string selectedPrinter = PrinterComboBox.SelectedItem.ToString();
             
-            printManager.Print(copies);
-           
+            if (string.IsNullOrWhiteSpace(numCopies.Text) || !int.TryParse(numCopies.Text, out int copies))
+            {
+                MessageBox.Show("Please enter a valid number of copies.", "Invalid Input", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (copies < 1)
+            {
+                MessageBox.Show("Number of copies must be at least 1.", "Invalid Input", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            printManager printManager = new printManager();
+            printManager.Print(copies, selectedPrinter);
         }
 
         private void PartNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)

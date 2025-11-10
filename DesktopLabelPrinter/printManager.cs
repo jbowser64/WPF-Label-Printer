@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Windows;
 
@@ -67,22 +68,45 @@ namespace DesktopLabelPrinter
             }
         }
 
-        public static void Print(int copies)
+        public void Print(int copies, string printerName)
         {
+            if (string.IsNullOrWhiteSpace(printerName))
+            {
+                MessageBox.Show("Error: Printer name cannot be empty.", "Invalid Printer", 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             short numCopies = Convert.ToInt16(copies);
-
-            string printerName = "ZDesigner ZM400 200 dpi (ZPL) 2";
-
             string imageFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "label.png");
             
             try
             {
                 if (!File.Exists(imageFilePath))
                 {
-                    MessageBox.Show($"Error: The specified image file was not found at '{imageFilePath}'.");
+                    MessageBox.Show($"Error: The specified image file was not found at '{imageFilePath}'.", 
+                        "File Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
+
+                // Validate printer exists
+                bool printerExists = false;
+                foreach (string installedPrinter in PrinterSettings.InstalledPrinters)
+                {
+                    if (installedPrinter.Equals(printerName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        printerExists = true;
+                        break;
+                    }
+                }
+
+                if (!printerExists)
+                {
+                    MessageBox.Show($"Error: The printer '{printerName}' was not found. Please ensure the printer is correctly installed on your system.\n\nAvailable printers:\n{string.Join("\n", PrinterSettings.InstalledPrinters.Cast<string>())}", 
+                        "Printer Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 PrintDocument pd = new PrintDocument();
                 pd.PrinterSettings.PrinterName = printerName;
                 pd.PrintPage += (sender, e) =>
@@ -91,36 +115,33 @@ namespace DesktopLabelPrinter
                     {
                         using (System.Drawing.Image imageToPrint = System.Drawing.Image.FromFile(imageFilePath))
                         {
-
                             Rectangle marginBounds = e.MarginBounds;
                             e.Graphics.DrawImage(imageToPrint, marginBounds);
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"An error occurred while drawing the image: {ex.Message}");
+                        MessageBox.Show($"An error occurred while drawing the image: {ex.Message}", 
+                            "Print Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         e.Cancel = true;
                     }
                 };
 
                 pd.DefaultPageSettings.PaperSize = new PaperSize("Label 2x1", 200, 100);
-
-
                 pd.DefaultPageSettings.Margins = new Margins(0, 0, 0, 0);
-
                 pd.PrinterSettings.Copies = numCopies;
 
                 pd.Print();
             }
             catch (InvalidPrinterException)
             {
-                MessageBox.Show($"Error: The printer '{printerName}' was not found. Please ensure the printer is correctly installed on your system.");
-
+                MessageBox.Show($"Error: The printer '{printerName}' is invalid or not accessible. Please check the printer settings and try again.", 
+                    "Invalid Printer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An unexpected error occurred: {ex.Message}");
-
+                MessageBox.Show($"An unexpected error occurred: {ex.Message}", 
+                    "Print Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
