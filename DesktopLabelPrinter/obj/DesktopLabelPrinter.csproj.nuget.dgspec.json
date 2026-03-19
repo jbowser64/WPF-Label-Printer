@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\usjbows\\source\\repos\\jbowser64\\WPF-Label-Printer\\DesktopLabelPrinter\\DesktopLabelPrinter.csproj": {}
+    "C:\\Users\\usjbows\\OneDrive - Waters Corporation\\Desktop\\Coding\\WPF-Label-Printer\\DesktopLabelPrinter\\DesktopLabelPrinter.csproj": {}
   },
   "projects": {
-    "C:\\Users\\usjbows\\source\\repos\\jbowser64\\WPF-Label-Printer\\DesktopLabelPrinter\\DesktopLabelPrinter.csproj": {
+    "C:\\Users\\usjbows\\OneDrive - Waters Corporation\\Desktop\\Coding\\WPF-Label-Printer\\DesktopLabelPrinter\\DesktopLabelPrinter.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\usjbows\\source\\repos\\jbowser64\\WPF-Label-Printer\\DesktopLabelPrinter\\DesktopLabelPrinter.csproj",
+        "projectUniqueName": "C:\\Users\\usjbows\\OneDrive - Waters Corporation\\Desktop\\Coding\\WPF-Label-Printer\\DesktopLabelPrinter\\DesktopLabelPrinter.csproj",
         "projectName": "DesktopLabelPrinter",
-        "projectPath": "C:\\Users\\usjbows\\source\\repos\\jbowser64\\WPF-Label-Printer\\DesktopLabelPrinter\\DesktopLabelPrinter.csproj",
+        "projectPath": "C:\\Users\\usjbows\\OneDrive - Waters Corporation\\Desktop\\Coding\\WPF-Label-Printer\\DesktopLabelPrinter\\DesktopLabelPrinter.csproj",
         "packagesPath": "C:\\Users\\usjbows\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\usjbows\\source\\repos\\jbowser64\\WPF-Label-Printer\\DesktopLabelPrinter\\obj\\",
+        "outputPath": "C:\\Users\\usjbows\\OneDrive - Waters Corporation\\Desktop\\Coding\\WPF-Label-Printer\\DesktopLabelPrinter\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -107,7 +107,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

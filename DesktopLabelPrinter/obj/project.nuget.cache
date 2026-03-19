@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "y5VxEVoeJlY=",
+  "dgSpecHash": "771EeXn6+9Y=",
   "success": true,
-  "projectFilePath": "C:\\Users\\usjbows\\source\\repos\\jbowser64\\WPF-Label-Printer\\DesktopLabelPrinter\\DesktopLabelPrinter.csproj",
+  "projectFilePath": "C:\\Users\\usjbows\\OneDrive - Waters Corporation\\Desktop\\Coding\\WPF-Label-Printer\\DesktopLabelPrinter\\DesktopLabelPrinter.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\usjbows\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\usjbows\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

@@ -4,15 +4,162 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DesktopLabelPrinter"
+        xmlns:viewModels="clr-namespace:DesktopLabelPrinter.ViewModels"
         mc:Ignorable="d"
         Title="TA Label Printer" Height="450" Width="800"       
-        Background="MidnightBlue">
+        Background="Gainsboro">
 
 
 
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <Style TargetType="Border">
             <Setter Property="CornerRadius" Value="10"/>
+        </Style>
+        
+        <!-- SAP Green Color Scheme using WPF built-in colors -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="DarkGreen"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="5,3"/>
+        </Style>
+        
+        <!-- Style for ComboBox with SAP Green colors -->
+        <Style x:Key="RoundedComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="DarkGreen"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton Name="ToggleButton"
+                                        Grid.Column="2"
+                                        Focusable="False"
+                                        ClickMode="Press"
+                                        IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="Border"
+                                              Background="White"
+                                              BorderBrush="DarkGreen"
+                                              BorderThickness="{TemplateBinding BorderThickness}"
+                                              CornerRadius="5">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="20"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ContentPresenter HorizontalAlignment="Left"
+                                                                  VerticalAlignment="Center"
+                                                                  Margin="3,0,0,0"
+                                                                  Content="{TemplateBinding Content}"/>
+                                                <Path x:Name="Arrow"
+                                                    Grid.Column="1"
+                                                    Fill="DarkSlateGray"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    Data="M 0 0 L 4 4 L 8 0 Z"/>
+                                            </Grid>
+                                        </Border>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter Name="ContentSite"
+                                            IsHitTestVisible="False"
+                                            Content="{TemplateBinding SelectionBoxItem}"
+                                            ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                            ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                            Margin="3,3,23,3"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Left"/>
+                            <TextBox x:Name="PART_EditableTextBox"
+                                   Style="{x:Null}"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   Margin="3,3,23,3"
+                                   Focusable="True"
+                                   Background="Transparent"
+                                   Visibility="Hidden"
+                                   IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                            <Popup Name="Popup"
+                                 Placement="Bottom"
+                                 IsOpen="{TemplateBinding IsDropDownOpen}"
+                                 AllowsTransparency="True"
+                                 Focusable="False"
+                                 PopupAnimation="Slide">
+                                <Grid Name="DropDown"
+                                    SnapsToDevicePixels="True"
+                                    MinWidth="{TemplateBinding ActualWidth}"
+                                    MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder"
+                                          Background="White"
+                                          BorderThickness="1"
+                                          BorderBrush="DarkGreen"
+                                          CornerRadius="5">
+                                        <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEditable" Value="true">
+                                <Setter Property="IsTabStop" Value="false"/>
+                                <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- Style for DataGrid with SAP Green colors -->
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="DarkGreen"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="RowBackground" Value="White"/>
+            <Setter Property="AlternatingRowBackground" Value="Gainsboro"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="LightGray"/>
+            <Setter Property="VerticalGridLinesBrush" Value="LightGray"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+        </Style>
+        
+        <!-- Style for DataGridColumnHeader with SAP Green -->
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="ForestGreen"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="8,4"/>
+        </Style>
+        
+        <!-- Style for ListBox with SAP Green colors -->
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="DarkGreen"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="LightGreen"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="ForestGreen"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </Window.Resources>
 
@@ -27,13 +174,13 @@
                 Orientation="Vertical">
 
             <Label Content="Enter Part Number"
-                   Foreground="Goldenrod"/>
+                   Foreground="DarkSlateGray"/>
 
             <TextBox x:Name="PartNumberTextBox" 
                      Width="200" 
                      Height="30" 
                      Margin="0,10,0,10"
-                     BorderThickness="2" TextChanged="PartNumberTextBox_TextChanged"
+                     Text="{Binding PartNumber, UpdateSourceTrigger=PropertyChanged}"
                      >
                 <TextBox.Resources>
                     <Style TargetType="Border">
@@ -43,12 +190,12 @@
             </TextBox>
 
             <Label Content="Enter Location"
-                    Foreground="Goldenrod"/>
+                    Foreground="DarkSlateGray"/>
             <TextBox x:Name="LocationTextBox" 
                      Width="200" 
                      Height="30" 
                      Margin="0,10,0,10"
-                     TextChanged="TextBox_TextChanged"
+                     Text="{Binding Location, UpdateSourceTrigger=PropertyChanged}"
                      >
                 <TextBox.Resources>
                     <Style TargetType="Border">
@@ -57,9 +204,9 @@
                 </TextBox.Resources>
             </TextBox>
             <Label Content="Number of copies to print:"
-                    Foreground="Goldenrod"/>
+                    Foreground="DarkSlateGray"/>
             <TextBox x:Name="numCopies" 
-                     Text="1" 
+                     Text="{Binding NumCopies, UpdateSourceTrigger=PropertyChanged}" 
                      Width="50" 
                      Height="30" 
                      Margin="30,10,0,10" 
@@ -72,13 +219,12 @@
                 </TextBox.Resources>
             </TextBox>
             <Label Content="Enter FIFO Date:"
-                    Foreground="Goldenrod"/>
+                    Foreground="DarkSlateGray"/>
             <TextBox x:Name="FIFODateTextBox" 
-                     Text="Month Year" 
+                     Text="{Binding FIFODate, UpdateSourceTrigger=PropertyChanged}" 
                      Width="200" 
                      Height="30" 
                      Margin="0,10,0,10"
-                     TextChanged="TextBox_TextChanged"
                      >
                 <TextBox.Resources>
                     <Style TargetType="Border">
@@ -87,36 +233,57 @@
                 </TextBox.Resources>
             </TextBox>
             <Label Content="Select Printer:"
-                   Foreground="Goldenrod"/>
+                   Foreground="DarkSlateGray"/>
             <ComboBox x:Name="PrinterComboBox" 
                      Width="200" 
                      Height="30" 
                      Margin="0,10,0,10"
-                     SelectionChanged="PrinterComboBox_SelectionChanged"
+                     ItemsSource="{Binding AvailablePrinters}"
+                     SelectedItem="{Binding SelectedPrinter}"
+                     Style="{StaticResource RoundedComboBoxStyle}"
                      >
-                <ComboBox.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="5"/>
-                    </Style>
-                </ComboBox.Resources>
             </ComboBox>
             <Button x:Name="PrintButton" 
                 Content="Print Label" 
                 Width="100" 
-                Height="23" 
-                Click="PrintButton_Click">
+                Height="35" 
+                Background="ForestGreen"
+                Foreground="White"
+                BorderThickness="0"
+                Command="{Binding PrintCommand}">
                 <Button.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="5"/>
                     </Style>
                 </Button.Resources>
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            CornerRadius="5"
+                                            Padding="10,5">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                        VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="DarkGreen"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
             </Button>
             
         </StackPanel>
         <!--{d:SampleData ItemCount=5}-->
         <Label Grid.Column="1" 
                Content="ZPLPreview " 
-                Foreground="Goldenrod"
+                Foreground="DarkSlateGray"
                HorizontalAlignment="Left" 
                Margin="37,28,0,0" 
                VerticalAlignment="Top" Height="26" Width="70"/>
@@ -127,14 +294,24 @@
                Margin="37,63,0,0" 
                VerticalAlignment="Top" 
                Width="144"
+               Source="{Binding ZplPreviewImage}"
                />
-        <ListBox x:Name="partsAndDescriptionList" Visibility="Collapsed"  Height="100" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.ColumnSpan="2" Margin="4,68,267,266" SelectionChanged="partsAndDescriptionList_SelectionChanged"/>
+        <ListBox x:Name="partsAndDescriptionList" 
+                 Visibility="{Binding IsPartsListVisible, Converter={StaticResource BooleanToVisibilityConverter}}"  
+                 Height="100" 
+                 d:ItemsSource="{d:SampleData ItemCount=5}" 
+                 Grid.ColumnSpan="2" 
+                 Margin="4,68,267,266" 
+                 ItemsSource="{Binding PartsSuggestions}"
+                 SelectedItem="{Binding SelectedPartNumber, Mode=TwoWay}">
+        </ListBox>
         <DataGrid x:Name="partsAndLocationsGrid" 
                   Grid.Column="1" 
                   d:ItemsSource="{d:SampleData ItemCount=5}"
                   Margin="3,197,6,8" 
                   Grid.ColumnSpan="2" 
-                  SelectionChanged="partsAndLocationsGrid_SelectionChanged"
+                  ItemsSource="{Binding PartsAndLocations}"
+                  SelectedItem="{Binding SelectedPart}"
                   >
             <DataGrid.Resources>
                 <Style TargetType="Border">
