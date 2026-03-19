@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DesktopLabelPrinter")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0d5fa1ec1776fed1ea708a0d797d2de097373698")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e0445a3da93ea886fe511e2ce951038149ef17a3")]
 [assembly: System.Reflection.AssemblyProductAttribute("DesktopLabelPrinter")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DesktopLabelPrinter")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
